@@ -60,21 +60,17 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "Username or Email already exists.");
   }
   const avatarLocalPath = req.files?.avatar[0]?.path;
-  const coverLocalPath = req?.files?.coverImage[0]?.path;
-
+ 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar image required.");
   }
 
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-  const coverImage = await uploadOnCloudinary(coverLocalPath);
-  console.log("avatar", avatar);
-  const user = await User.create({
+    const user = await User.create({
     username: username?.toLowerCase(),
     fullName,
     avatar: avatar?.url,
-    coverImage: coverImage?.url || "",
-    password,
+      password,
     email,
   });
 
@@ -255,28 +251,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     );
 });
 
-const updateUserCoverImage = asyncHandler(async (req, res) => {
-  const user = req.user;
-  const coverImageLocalPath = req.file?.path;
-
-  if (!coverImageLocalPath) {
-    throw new ApiError(400, "avatar image required");
-  }
-  const cover = await uploadOnCloudinary(coverImageLocalPath);
-  const updatedUser = await User.findByIdAndUpdate(user?._id, {
-    $set: {
-      coverImage: cover?.url,
-    },
-  }).select("-password");
-  if (updatedUser && cover?.url) {
-    await removeFromCloudinary(user.coverImage);
-  }
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, updatedUser, "cover image udpated successfully")
-    );
-});
+ 
 
 export {
   registerUser,
@@ -287,5 +262,4 @@ export {
   getCurrentUser,
   updateAccountDetails,
   updateUserAvatar,
-  updateUserCoverImage,
-};
+ };
