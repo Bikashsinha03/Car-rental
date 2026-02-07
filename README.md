@@ -1,2 +1,1 @@
-# Car-rental
-New repo
+index.html
